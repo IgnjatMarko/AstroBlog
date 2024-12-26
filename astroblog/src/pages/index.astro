@@ -1,11 +1,35 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { databases } from '@/lib/appwrite';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from '@/layouts/Layout.astro';
+import Container from '@/components/Container.astro';
+
+const { documents: posts } = await databases.listDocuments(
+  "676d60890011cd560167",
+  "676d60a70026b64ca025",
+);
 ---
-
-<Layout>
-	<Welcome />
+<Layout title="My Blog">
+	<Container>
+		<h1 class="sr-only">Blog Posts</h1>
+		<ul>
+			{posts.map(post => {
+				return (
+					<li class="mb-12 last:mb-0">
+						<h2 class="text-3xl font-semibold mb-4">
+							<a class="hover:text-blue-500 hover:underline" href={`/posts/${post.slug}`}>
+								{ post.title }
+							</a>
+						</h2>
+						<p class="text-sm text-slate-500 mb-4">
+							{ new Date(post.$createdAt).toLocaleDateString() }
+						</p>
+						<p>
+							{ post.excerpt }
+						</p>
+					</li>
+				)
+			})}
+		</ul>
+	</Container>
 </Layout>
